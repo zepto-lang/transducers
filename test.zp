@@ -1,0 +1,27 @@
+(load "transducers")
+(load "minitest/minitest")
+(define transducers:transduce (import "transducers:transduce"))
+(define transducers:map (import "transducers:map"))
+(define transducers:take (import "transducers:take"))
+(define transducers:filter (import "transducers:filter"))
+(define transducers:partition-by (import "transducers:partition-by"))
+(define minitest:assert-equal (import "minitest:assert-equal"))
+((import "minitest:colorize") #t)
+((import "minitest:verbose") #t)
+
+(minitest:assert-equal
+  9
+  (transducers:transduce (transducers:map add1) + 0 [1 2 3])
+  "test that we can map and reduce with a transducer")
+
+(minitest:assert-equal
+  1
+  (transducers:transduce (transducers:take 1) + 0 [1 2 3])
+  "test that we can take and reduce with a transducer")
+
+(minitest:assert-equal
+  [(1 1 1) (2 2 2) (1)]
+  (transducers:transduce (transducers:partition-by id) += [] [1 1 1 2 2 2 1])
+  "test that we can take and reduce with a transducer")
+
+((import "minitest:results"))

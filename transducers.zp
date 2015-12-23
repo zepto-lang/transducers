@@ -1,0 +1,80 @@
+;    ("sequence" sequence)
+;    ("into" into)
+;    ("educe" educe)
+(module "transducers"
+  (export
+    (list "transduce" transduce)
+    (list "filter" filt)
+    (list "map" ma)
+    (list "reduce" red)
+    (list "take" take)
+    (list "partition-by" partition-by))
+
+  (transduce (case-lambda
+    ((forms f col) (transduce forms f (f) col))
+    ((forms f init col)
+      (let* ((x (forms f))
+             (ret (reduce x init col)))
+        (x ret)))))
+
+  (ma (lambda (f)
+    (lambda (rf)
+      (case-lambda
+        (() (rf))
+        ((res) (rf res))
+        ((res in) (rf res (f in)))))))
+
+  (filt (lambda (pref)
+    (lambda (rf)
+      (case-lambda
+        (() (rf))
+        ((res) (rf res))
+        ((res in) (if (pred in) (rf res in) res))))))
+
+  (red (lambda (f)
+    (lambda (rf)
+      (case-lambda
+        (() (rf))
+        ((res) (rf res))
+        ((res in) (rf res (f res in)))))))
+
+  (take (lambda (n)
+    (lambda (rf)
+      (let ((nv n))
+        (case-lambda
+          (() (rf))
+          ((res) (rf res))
+          ((res in)
+            (let ((n nv))
+              (begin
+                (set! nv (sub1 nv))
+                (if (positive? n) (rf res in) res)))))))))
+
+  (partition-by (lambda (f)
+    (lambda (rf)
+      (let ((a '())
+            (pv (nil)))
+        (case-lambda
+          (() (rf))
+          ((res) 
+            (let ((res (if (null? a)
+                        res
+                        (let ((v a))
+                          (begin
+                           (set! a [])
+                           (rf res v))))))
+              (rf res)))
+          ((res in)
+            (let ((pval pv)
+                  (val (f in)))
+            (if (or (nil? pval) (eq? val pval))
+              (begin
+                (set! pv in)
+                (set! a (++ a in))
+                res)
+              (let* ((v a)
+                     (ret (rf res v)))
+                (begin
+                  (set! pv in)
+                  (set! a (list in))
+                  ret)))))))))))
