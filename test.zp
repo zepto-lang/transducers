@@ -15,11 +15,6 @@
   "test that we can map and reduce with a transducer")
 
 (minitest:assert-equal
-  9
-  (transducers:transduce (list (transducers:filter (curry eq? 1)) (transducers:map add1)) + 0 [1 2 3])
-  "test that we can map and reduce with a transducer")
-
-(minitest:assert-equal
   1
   (transducers:transduce (transducers:take 1) + 0 [1 2 3])
   "test that we can take and reduce with a transducer")
