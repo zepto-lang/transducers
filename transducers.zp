@@ -24,7 +24,7 @@
         ((res) (rf res))
         ((res in) (rf res (f in)))))))
 
-  (filt (lambda (pref)
+  (filt (lambda (pred)
     (lambda (rf)
       (case-lambda
         (() (rf))

@@ -24,4 +24,9 @@
   (transducers:transduce (transducers:partition-by id) += [] [1 1 1 2 2 2 1])
   "test that we can take and reduce with a transducer")
 
+(minitest:assert-equal
+  [1 1]
+  (transducers:transduce (transducers:filter (curry eq? 1)) += [] [1 2 3 1])
+  "test that we can filter with a transducer")
+
 ((import "minitest:results"))
