@@ -4,6 +4,7 @@
 (module "transducers"
   (export
     (list "transduce" transduce)
+    (list "compose" compose)
     (list "filter" filt)
     (list "map" ma)
     (list "reduce" red)
@@ -16,6 +17,19 @@
       (let* ((x (forms f))
              (ret (reduce x init col)))
         (x ret)))))
+
+  (compose (case-lambda
+    (() id)
+    ((f) f)
+    ((f g)
+      (case-lambda
+       (() (f (g)))
+       ((x) (f (g x)))
+       ((x y) (f (g x y)))
+       ((x y z) (f (g x y z)))
+       (args (begin (write g) (write args) (f (apply g args))))))
+    (fs
+      (reduce compose (car fs) (cdr fs)))))
 
   (ma (lambda (f)
     (lambda (rf)

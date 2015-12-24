@@ -5,6 +5,7 @@
 (define transducers:take (import "transducers:take"))
 (define transducers:filter (import "transducers:filter"))
 (define transducers:partition-by (import "transducers:partition-by"))
+(define transducers:compose (import "transducers:compose"))
 (define minitest:assert-equal (import "minitest:assert-equal"))
 ((import "minitest:colorize") #t)
 ((import "minitest:verbose") #t)
@@ -28,5 +29,16 @@
   [1 1]
   (transducers:transduce (transducers:filter (curry eq? 1)) += [] [1 2 3 1])
   "test that we can filter with a transducer")
+
+(minitest:assert-equal
+  [2 3]
+  (transducers:transduce
+    (transducers:compose
+      (transducers:map add1)
+      (transducers:filter (lambda (x) (not (eq? 4 x)))))
+    +=
+    []
+    [1 2 3])
+  "test that we can compose transducers")
 
 ((import "minitest:results"))
