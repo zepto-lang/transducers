@@ -46,4 +46,17 @@
     [1 2 3])
   "test that we can compose transducers")
 
+(minitest:assert-equal
+  [2]
+  (transducers:transduce
+    (transducers:compose
+      (transducers:map add1)
+      (transducers:filter (lambda (x) (not (eq? 3 x))))
+      (transducers:compose
+        (transducers:filter (lambda (x) (not (eq? 4 x))))))
+    +=
+    []
+    [1 2 3])
+  "test that we can nest compositions")
+
 ((import "minitest:results"))
