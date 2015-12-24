@@ -16,6 +16,11 @@
   "test that we can map and reduce with a transducer")
 
 (minitest:assert-equal
+  9
+  (transducers:transduce (transducers:map add1) + 0 {1 2 3} vector:reduce)
+  "test that we can transduce other collections")
+
+(minitest:assert-equal
   1
   (transducers:transduce (transducers:take 1) + 0 [1 2 3])
   "test that we can take and reduce with a transducer")

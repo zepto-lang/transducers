@@ -16,6 +16,10 @@
     ((forms f init col)
       (let* ((x (forms f))
              (ret (reduce x init col)))
+        (x ret)))
+    ((forms f init col rf)
+      (let* ((x (forms f))
+             (ret (rf x init col)))
         (x ret)))))
 
   (compose (case-lambda
