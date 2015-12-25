@@ -3,8 +3,6 @@
 A minimal transducer library in and for zepto.
 Obviously inspired by Clojure.
 
-It's a stub and not really usable yet.
-
 ## Usage
 
 This library contains the functions `transduce`, `compose`,
