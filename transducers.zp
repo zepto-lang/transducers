@@ -19,7 +19,7 @@
       ((list? col) (reduce f init col))
       ((vector? col) (vector:reduce f init col))
       ((byte-vector? col) (byte-vector:reduce f init col))
-      ((hash-map? col) (hash:key-val-reduce f init col))
+      ((hash-map? col) (hash:kv-reduce f init col))
       (else (error "not a collection: " col)))))
 
   (transduce (case-lambda
