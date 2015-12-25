@@ -1,26 +1,41 @@
 ;    ("sequence" sequence)
-;    ("into" into)
 ;    ("educe" educe)
 (module "transducers"
   (export
     (list "transduce" transduce)
     (list "compose" compose)
+    (list "into" into)
     (list "filter" filt)
+    (list "remove" rem)
+    (list "cat" cat)
     (list "map" ma)
+    (list "mapcat" mapcat)
     (list "reduce" red)
     (list "take" take)
     (list "partition-by" partition-by))
+
+  (reduce- (lambda (f init col)
+    (cond
+      ((list? col) (reduce f init col))
+      ((vector? col) (vector:reduce f init col))
+      ((byte-vector? col) (byte-vector:reduce f init col))
+      ((hash-map? col) (hash:key-val-reduce f init col))
+      (else (error "not a collection: " col)))))
 
   (transduce (case-lambda
     ((forms f col) (transduce forms f (f) col))
     ((forms f init col)
       (let* ((x (forms f))
-             (ret (reduce x init col)))
+             (ret (reduce- x init col)))
         (x ret)))
     ((forms f init col rf)
       (let* ((x (forms f))
              (ret (rf x init col)))
         (x ret)))))
+
+  (into (case-lambda
+    ((to forms from) (transduce forms += to from))
+    ((to forms from alt) (transduce forms += to from alt))))
 
   (compose (case-lambda
     (() id)
@@ -49,6 +64,19 @@
         ((res) (rf res))
         ((res in) (if (pred in) (rf res in) res))))))
 
+  (rem (lambda (pred)
+    (lambda (rf)
+      (case-lambda
+        (() (rf))
+        ((res) (rf res))
+        ((res in) (if (not (pred in)) (rf res in) res))))))
+
+  (cat (lambda (rf)
+      (case-lambda
+        (() (rf))
+        ((res) (rf res))
+        ((res in) (reduce- rf res in)))))
+
   (red (lambda (f)
     (lambda (rf)
       (case-lambda
@@ -67,6 +95,9 @@
               (begin
                 (set! nv (sub1 nv))
                 (if (positive? n) (rf res in) res)))))))))
+
+  (mapcat (lambda (f)
+    (compose (ma f) cat)))
 
   (partition-by (lambda (f)
     (lambda (rf)
